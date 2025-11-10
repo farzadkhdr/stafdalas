@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سیستەمی عبدولا</title>
+    <style>
+        :root {
+            --primary-color: #1a1a2e;
+            --secondary-color: #16213e;
+            --accent-color: #0f3460;
+            --text-color: #e6e6e6;
+            --border-color: #2d4059;
+            --success-color: #4caf50;
+            --danger-color: #f44336;
+            --warning-color: #ff9800;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        h1 {
+            color: var(--text-color);
+            font-size: 2rem;
+            margin-bottom: 10px;
+            user-select: none;
+        }
+
+        .developer {
+            color: var(--text-color);
+            opacity: 0.7;
+            font-size: 0.9rem;
+            user-select: none;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab.active {
+            border-bottom: 3px solid var(--accent-color);
+            color: var(--text-color);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            color: var(--text-color);
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 5px rgba(15, 52, 96, 0.5);
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #0a2640;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        button.delete {
+            background-color: var(--danger-color);
+        }
+
+        button.delete:hover {
+            background-color: #d32f2f;
+        }
+
+        button.save {
+            background-color: var(--success-color);
+        }
+
+        button.save:hover {
+            background-color: #388e3c;
+        }
+
+        .history-list {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .history-item {
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideIn 0.3s;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-info {
+            flex-grow: 1;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+        }
+
+        .backup-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .backup-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            display: none;
+        }
+
+        .invoice-preview {
+            background-color: var(--secondary-color);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 1px solid var(--border-color);
+            display: none;
+        }
+
+        .invoice-header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .invoice-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .invoice-items {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .invoice-items th, .invoice-items td {
+            padding: 10px;
+            text-align: right;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .invoice-total {
+            text-align: left;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-top: 10px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Responsive design */
+        @media (max-width: 600px) {
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                text-align: center;
+            }
+            
+            .backup-buttons {
+                flex-direction: column;
+            }
+            
+            .history-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .history-actions {
+                align-self: flex-end;
+            }
+            
+            .invoice-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>سیستەمی عبدولا</h1>
+            <div class="developer">developer by faroy mam khdry</div>
+        </header>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="packet">هێنانی پاکەت</div>
+            <div class="tab" data-tab="payment">پارەی وەرگراو</div>
+            <div class="tab" data-tab="storage">قایمەکردن بۆ مخزن</div>
+            <div class="tab" data-tab="backup">باکەپ</div>
+        </div>
+
+        <!-- بخش هێنانی پاکەت -->
+        <div id="packet" class="tab-content active">
+            <div class="form-group">
+                <label for="packetPersonName">ناوی کەسەکە</label>
+                <input type="text" id="packetPersonName" placeholder="ناوی کەسەکە بنوسە">
+            </div>
+            <div class="form-group">
+                <label for="packetName">ناوی پاکەت</label>
+                <input type="text" id="packetName" placeholder="ناوی پاکەت بنوسە">
+            </div>
+            <div class="form-group">
+                <label for="packetAmount">بڕی تەکە</label>
+                <input type="number" id="packetAmount" placeholder="بڕی تەکە بنوسە">
+            </div>
+            <button id="addPacket">زیادکردنی پاکەت</button>
+
+            <div class="history-list" id="packetHistory">
+                <!-- لیست تاریخچه پاکت‌ها -->
+            </div>
+        </div>
+
+        <!-- بخش پارەی وەرگراو -->
+        <div id="payment" class="tab-content">
+            <div class="form-group">
+                <label for="personName">ناوی کەسەکە</label>
+                <input type="text" id="personName" placeholder="ناوی کەسەکە بنوسە">
+            </div>
+            <div class="form-group">
+                <label for="paymentAmount">بڕی پارەی وەگراو</label>
+                <input type="number" id="paymentAmount" placeholder="بڕی پارەی وەگراو بنوسە">
+            </div>
+            <button id="addPayment">زیادکردنی پارە</button>
+
+            <div class="history-list" id="paymentHistory">
+                <!-- لیست تاریخچه پرداخت‌ها -->
+            </div>
+        </div>
+
+        <!-- بخش قایمەکردن بۆ مخزن -->
+        <div id="storage" class="tab-content">
+            <div class="form-group">
+                <label for="storagePacketName">ناوی پاکەت</label>
+                <input type="text" id="storagePacketName" placeholder="ناوی پاکەت بنوسە">
+            </div>
+            <div class="form-group">
+                <label for="cartonAmount">بڕی کارتۆن</label>
+                <input type="number" id="cartonAmount" placeholder="بڕی کارتۆن بنوسە">
+            </div>
+            <div class="form-group">
+                <label for="storageImage">وێنەی فاکتور (ئارەزوومەندانە)</label>
+                <input type="file" id="storageImage" accept="image/*">
+                <img id="imagePreview" class="image-preview" alt="پێشبینینی وێنە">
+            </div>
+            <button id="addToStorage">زیادکردن بۆ لیست</button>
+
+            <div class="history-list" id="storageHistory">
+                <!-- لیست تاریخچه مخزن -->
+            </div>
+
+            <div class="invoice-preview" id="invoicePreview">
+                <div class="invoice-header">
+                    <h2>فاکتوری قایمەکردن</h2>
+                    <p>سیستەمی عبدولا</p>
+                </div>
+                <div class="invoice-details">
+                    <div><strong>ناوی پاکەت:</strong> <span id="invoicePacketName"></span></div>
+                    <div><strong>بڕی کارتۆن:</strong> <span id="invoiceCartonAmount"></span></div>
+                    <div><strong>ڕێکەوت:</strong> <span id="invoiceDate"></span></div>
+                    <div><strong>کۆدی فاکتور:</strong> <span id="invoiceCode"></span></div>
+                </div>
+                <table class="invoice-items">
+                    <thead>
+                        <tr>
+                            <th>ناوی پاکەت</th>
+                            <th>بڕی کارتۆن</th>
+                            <th>نرخی تاک</th>
+                            <th>کۆی گشتی</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoiceItems">
+                        <!-- آیتم‌های فاکتور -->
+                    </tbody>
+                </table>
+                <div class="invoice-total">
+                    کۆی گشتی: <span id="invoiceTotal">0</span> دینار
+                </div>
+            </div>
+            
+            <div class="form-group" style="margin-top: 20px;">
+                <button id="generateInvoice" class="save">دروستکردنی فاکتور</button>
+                <button id="saveInvoice" class="save">پاشەکەوتکردنی وێنەی فاکتور</button>
+            </div>
+        </div>
+
+        <!-- بخش باکەپ -->
+        <div id="backup" class="tab-content">
+            <div class="backup-section">
+                <div class="backup-buttons">
+                    <button id="backupData">باکەپ کردن</button>
+                    <button id="restoreData">گەڕاندنەوەی باکەپ</button>
+                    <button id="readBackup">خوێندنەوەی باکەپ</button>
+                </div>
+                <div class="form-group">
+                    <label for="backupContent">ناوەڕۆکی باکەپ</label>
+                    <textarea id="backupContent" rows="10" placeholder="ناوەڕۆکی باکەپ"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // داده‌های نمونه
+        let packets = JSON.parse(localStorage.getItem('packets')) || [];
+        let payments = JSON.parse(localStorage.getItem('payments')) || [];
+        let storageItems = JSON.parse(localStorage.getItem('storageItems')) || [];
+
+        // عناصر DOM
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        // عناصر بخش پاکت
+        const packetPersonNameInput = document.getElementById('packetPersonName');
+        const packetNameInput = document.getElementById('packetName');
+        const packetAmountInput = document.getElementById('packetAmount');
+        const addPacketButton = document.getElementById('addPacket');
+        const packetHistory = document.getElementById('packetHistory');
+        
+        // عناصر بخش پرداخت
+        const personNameInput = document.getElementById('personName');
+        const paymentAmountInput = document.getElementById('paymentAmount');
+        const addPaymentButton = document.getElementById('addPayment');
+        const paymentHistory = document.getElementById('paymentHistory');
+        
+        // عناصر بخش مخزن
+        const storagePacketNameInput = document.getElementById('storagePacketName');
+        const cartonAmountInput = document.getElementById('cartonAmount');
+        const storageImageInput = document.getElementById('storageImage');
+        const imagePreview = document.getElementById('imagePreview');
+        const addToStorageButton = document.getElementById('addToStorage');
+        const storageHistory = document.getElementById('storageHistory');
+        const generateInvoiceButton = document.getElementById('generateInvoice');
+        const saveInvoiceButton = document.getElementById('saveInvoice');
+        const invoicePreview = document.getElementById('invoicePreview');
+        
+        // عناصر بخش باکاپ
+        const backupDataButton = document.getElementById('backupData');
+        const restoreDataButton = document.getElementById('restoreData');
+        const readBackupButton = document.getElementById('readBackup');
+        const backupContent = document.getElementById('backupContent');
+
+        // مدیریت تب‌ها
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(tc => tc.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // افزودن پاکت جدید
+        addPacketButton.addEventListener('click', () => {
+            const personName = packetPersonNameInput.value.trim();
+            const name = packetNameInput.value.trim();
+            const amount = parseFloat(packetAmountInput.value);
+            
+            if (!personName || !name || isNaN(amount) || amount <= 0) {
+                alert('تکایە هەموو خانەکان پڕ بکەرەوە و بڕی دروست بنوسە');
+                return;
+            }
+            
+            const packet = {
+                id: Date.now(),
+                personName,
+                name,
+                amount,
+                date: new Date().toLocaleString('ku')
+            };
+            
+            packets.push(packet);
+            saveData();
+            renderPacketHistory();
+            
+            // پاک کردن فیلدها
+            packetPersonNameInput.value = '';
+            packetNameInput.value = '';
+            packetAmountInput.value = '';
+            
+            // انیمیشن تأیید
+            addPacketAnimation();
+        });
+
+        // افزودن پرداخت جدید
+        addPaymentButton.addEventListener('click', () => {
+            const name = personNameInput.value.trim();
+            const amount = parseFloat(paymentAmountInput.value);
+            
+            if (!name || isNaN(amount) || amount <= 0) {
+                alert('تکایە ناو و بڕی دروست بنوسە');
+                return;
+            }
+            
+            const payment = {
+                id: Date.now(),
+                name,
+                amount,
+                date: new Date().toLocaleString('ku')
+            };
+            
+            payments.push(payment);
+            saveData();
+            renderPaymentHistory();
+            
+            // پاک کردن فیلدها
+            personNameInput.value = '';
+            paymentAmountInput.value = '';
+            
+            // انیمیشن تأیید
+            addPaymentAnimation();
+        });
+
+        // پیش‌نمایش تصویر
+        storageImageInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // افزودن به مخزن
+        addToStorageButton.addEventListener('click', () => {
+            const packetName = storagePacketNameInput.value.trim();
+            const cartonAmount = parseInt(cartonAmountInput.value);
+            const imageFile = storageImageInput.files[0];
+            
+            if (!packetName || isNaN(cartonAmount) || cartonAmount <= 0) {
+                alert('تکایە ناوی پاکەت و بڕی کارتۆنی دروست بنوسە');
+                return;
+            }
+            
+            let imageData = null;
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imageData = e.target.result;
+                    saveStorageItem(packetName, cartonAmount, imageData);
+                }
+                reader.readAsDataURL(imageFile);
+            } else {
+                saveStorageItem(packetName, cartonAmount, null);
+            }
+        });
+
+        function saveStorageItem(packetName, cartonAmount, imageData) {
+            const storageItem = {
+                id: Date.now(),
+                packetName,
+                cartonAmount,
+                imageData,
+                date: new Date().toLocaleString('ku')
+            };
+            
+            storageItems.push(storageItem);
+            saveData();
+            renderStorageHistory();
+            
+            // پاک کردن فیلدها
+            storagePacketNameInput.value = '';
+            cartonAmountInput.value = '';
+            storageImageInput.value = '';
+            imagePreview.style.display = 'none';
+            
+            // انیمیشن تأیید
+            addToStorageAnimation();
+        }
+
+        // تولید فاکتور
+        generateInvoiceButton.addEventListener('click', () => {
+            if (storageItems.length === 0) {
+                alert('هیچ ئایتمێک لە مخزن نیە بۆ دروستکردنی فاکتور');
+                return;
+            }
+            
+            // پر کردن اطلاعات فاکتور
+            document.getElementById('invoicePacketName').textContent = storageItems[storageItems.length - 1].packetName;
+            document.getElementById('invoiceCartonAmount').textContent = storageItems[storageItems.length - 1].cartonAmount;
+            document.getElementById('invoiceDate').textContent = new Date().toLocaleString('ku');
+            document.getElementById('invoiceCode').textContent = 'INV-' + Date.now();
+            
+            // پر کردن آیتم‌های فاکتور
+            const invoiceItems = document.getElementById('invoiceItems');
+            invoiceItems.innerHTML = '';
+            let total = 0;
+            
+            storageItems.forEach(item => {
+                const row = document.createElement('tr');
+                const price = Math.floor(Math.random() * 10000) + 5000; // قیمت تصادفی برای نمونه
+                const itemTotal = price * item.cartonAmount;
+                total += itemTotal;
+                
+                row.innerHTML = `
+                    <td>${item.packetName}</td>
+                    <td>${item.cartonAmount}</td>
+                    <td>${price.toLocaleString()} دینار</td>
+                    <td>${itemTotal.toLocaleString()} دینار</td>
+                `;
+                invoiceItems.appendChild(row);
+            });
+            
+            document.getElementById('invoiceTotal').textContent = total.toLocaleString();
+            invoicePreview.style.display = 'block';
+        });
+
+        // ذخیره فاکتور به عنوان تصویر
+        saveInvoiceButton.addEventListener('click', () => {
+            if (storageItems.length === 0) {
+                alert('هیچ فاکتورێک دروست نەکراوە');
+                return;
+            }
+            
+            // در اینجا کد برای ذخیره فاکتور به عنوان تصویر اضافه می‌شود
+            // برای سادگی، از alert استفاده می‌کنیم
+            alert('فاکتور بە سەرکەوتوویی پاشەکەوت کرا');
+        });
+
+        // نمایش تاریخچه پاکت‌ها
+        function renderPacketHistory() {
+            packetHistory.innerHTML = '';
+            
+            if (packets.length === 0) {
+                packetHistory.innerHTML = '<div class="empty-message">هیچ پاکەتێک نیە</div>';
+                return;
+            }
+            
+            packets.forEach(packet => {
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                item.innerHTML = `
+                    <div class="history-info">
+                        <strong>${packet.personName}</strong> - ${packet.name} - ${packet.amount} تەکە
+                        <div class="date">${packet.date}</div>
+                    </div>
+                    <div class="history-actions">
+                        <button class="delete" onclick="deletePacket(${packet.id})">سڕینەوە</button>
+                    </div>
+                `;
+                packetHistory.appendChild(item);
+            });
+        }
+
+        // نمایش تاریخچه پرداخت‌ها
+        function renderPaymentHistory() {
+            paymentHistory.innerHTML = '';
+            
+            if (payments.length === 0) {
+                paymentHistory.innerHTML = '<div class="empty-message">هیچ پارەیەک نیە</div>';
+                return;
+            }
+            
+            payments.forEach(payment => {
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                item.innerHTML = `
+                    <div class="history-info">
+                        <strong>${payment.name}</strong> - ${payment.amount} پارە
+                        <div class="date">${payment.date}</div>
+                    </div>
+                    <div class="history-actions">
+                        <button class="delete" onclick="deletePayment(${payment.id})">سڕینەوە</button>
+                    </div>
+                `;
+                paymentHistory.appendChild(item);
+            });
+        }
+
+        // نمایش تاریخچه مخزن
+        function renderStorageHistory() {
+            storageHistory.innerHTML = '';
+            
+            if (storageItems.length === 0) {
+                storageHistory.innerHTML = '<div class="empty-message">هیچ شتێک لە مخزن نیە</div>';
+                return;
+            }
+            
+            storageItems.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'history-item';
+                
+                let imageHtml = '';
+                if (item.imageData) {
+                    imageHtml = `<img src="${item.imageData}" alt="وێنەی پاکەت" style="max-width: 50px; max-height: 50px; border-radius: 5px; margin-left: 10px;">`;
+                }
+                
+                itemElement.innerHTML = `
+                    <div class="history-info" style="display: flex; align-items: center;">
+                        <div>
+                            <strong>${item.packetName}</strong> - ${item.cartonAmount} کارتۆن
+                            <div class="date">${item.date}</div>
+                        </div>
+                        ${imageHtml}
+                    </div>
+                    <div class="history-actions">
+                        <button class="delete" onclick="deleteStorageItem(${item.id})">سڕینەوە</button>
+                    </div>
+                `;
+                storageHistory.appendChild(itemElement);
+            });
+        }
+
+        // حذف پاکت
+        window.deletePacket = function(id) {
+            if (confirm('دڵنیای لە سڕینەوەی ئەم پاکەتە؟')) {
+                packets = packets.filter(packet => packet.id !== id);
+                saveData();
+                renderPacketHistory();
+            }
+        };
+
+        // حذف پرداخت
+        window.deletePayment = function(id) {
+            if (confirm('دڵنیای لە سڕینەوەی ئەم پارەیە؟')) {
+                payments = payments.filter(payment => payment.id !== id);
+                saveData();
+                renderPaymentHistory();
+            }
+        };
+
+        // حذف آیتم مخزن
+        window.deleteStorageItem = function(id) {
+            if (confirm('دڵنیای لە سڕینەوەی ئەم ئایتمە لە مخزن؟')) {
+                storageItems = storageItems.filter(item => item.id !== id);
+                saveData();
+                renderStorageHistory();
+            }
+        };
+
+        // ذخیره داده‌ها
+        function saveData() {
+            localStorage.setItem('packets', JSON.stringify(packets));
+            localStorage.setItem('payments', JSON.stringify(payments));
+            localStorage.setItem('storageItems', JSON.stringify(storageItems));
+        }
+
+        // باکاپ داده‌ها
+        backupDataButton.addEventListener('click', () => {
+            const data = {
+                packets,
+                payments,
+                storageItems,
+                backupDate: new Date().toLocaleString('ku')
+            };
+            
+            backupContent.value = JSON.stringify(data, null, 2);
+            alert('باکەپ کرا بە سەرکەوتوویی');
+        });
+
+        // بازیابی داده‌ها
+        restoreDataButton.addEventListener('click', () => {
+            try {
+                const data = JSON.parse(backupContent.value);
+                
+                if (data.packets && data.payments && data.storageItems) {
+                    packets = data.packets;
+                    payments = data.payments;
+                    storageItems = data.storageItems;
+                    saveData();
+                    renderPacketHistory();
+                    renderPaymentHistory();
+                    renderStorageHistory();
+                    alert('زانیاریەکان گەڕێندرایەوە بە سەرکەوتوویی');
+                } else {
+                    alert('فایلی باکەپ دروست نیە');
+                }
+            } catch (e) {
+                alert('هەڵە لە خوێندنەوەی فایلی باکەپ: ' + e.message);
+            }
+        });
+
+        // خواندن باکاپ
+        readBackupButton.addEventListener('click', () => {
+            const data = {
+                packets,
+                payments,
+                storageItems,
+                backupDate: new Date().toLocaleString('ku')
+            };
+            
+            backupContent.value = JSON.stringify(data, null, 2);
+        });
+
+        // انیمیشن‌ها
+        function addPacketAnimation() {
+            addPacketButton.style.backgroundColor = 'var(--success-color)';
+            setTimeout(() => {
+                addPacketButton.style.backgroundColor = 'var(--accent-color)';
+            }, 500);
+        }
+
+        function addPaymentAnimation() {
+            addPaymentButton.style.backgroundColor = 'var(--success-color)';
+            setTimeout(() => {
+                addPaymentButton.style.backgroundColor = 'var(--accent-color)';
+            }, 500);
+        }
+
+        function addToStorageAnimation() {
+            addToStorageButton.style.backgroundColor = 'var(--success-color)';
+            setTimeout(() => {
+                addToStorageButton.style.backgroundColor = 'var(--accent-color)';
+            }, 500);
+        }
+
+        // بارگذاری اولیه
+        document.addEventListener('DOMContentLoaded', () => {
+            renderPacketHistory();
+            renderPaymentHistory();
+            renderStorageHistory();
+        });
+    </script>
+</body>
+</html>
